@@ -82,13 +82,13 @@ boardPressed(a){
                   <View style={styles.boardScroll}>
                     {this.state.boards.map((b, i) => {
                       //console.log(b.board)
-                      return <TouchableOpacity
+                      return <View key={i} style={styles.boardSectionElement}><TouchableOpacity
                       key={i}
                       onPress={this.boardPressed.bind(this, b.board)}>
-                    <View style={styles.boardSectionElement}>
+                    <View>
                       <Text style={styles.boardSectionElementText}>{b.board}</Text>
                     </View>
-                    </TouchableOpacity>
+                    </TouchableOpacity></View>
                   })}
                   </View>
                   </ScrollView>
@@ -96,9 +96,9 @@ boardPressed(a){
 
 
 
-                  { this.state.selectedBoard &&
+                  { this.state.selectedBoard && 
                     <View style={styles.catalog}>
-                      <Text style={styles.title}>Selecciona un catalogo</Text>
+                      <Text style={styles.title}>[{this.state.selectedBoard}]Selecciona un catalogo</Text>
                       <ScrollView>
                       <View>
                       //TODO implement pagination
@@ -106,14 +106,14 @@ boardPressed(a){
                           return <View key={i}>
                             <Text style={styles.catalogPage}>Page {c.page} </Text>
                             {c.threads.map((t, ti) => {
-                              return <TouchableOpacity
+                              return <View key={ti} style={styles.catalogElement}><TouchableOpacity
                               key={ti}
                               onPress={this.catalogPressed.bind(this, t.no)}
                               >
-                                <View style={styles.catalogElement}>
-                                  <Text style={styles.catalogText}>{t.semantic_url.split('-').join(' ')}</Text>
+                                <View>
+                                  <Text style={styles.catalogText}>{t.no} - {t.semantic_url.split('-').join(' ')}</Text>
                                   </View>
-                              </TouchableOpacity>
+                              </TouchableOpacity></View>
                             })}
                           </View>
                         })}
