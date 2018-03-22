@@ -4,6 +4,7 @@ import {
 } from 'react-native'
 
 import {getBoard, getCatalog, getContent} from '../services/chan'
+import {downloadContnetToServer} from '../services/nodeChan'
 
 export default class Main extends Component{
 
@@ -71,6 +72,13 @@ boardPressed(a){
 
 }
 
+catalogDownloadPressed(id){
+    //console.warn('will download catalog', this.state.selectedBoard, id)
+    downloadContnetToServer(this.state.selectedBoard, id).then(r2 => {
+        //TODO show toast message, called to save
+    })
+}
+
           render(){
               return <View style={styles.main}>
                 <View style={styles.header}/>
@@ -78,12 +86,11 @@ boardPressed(a){
                 <View style={styles.boardSection}>
                   <Text style={styles.title}>Selecciona un board</Text>
                   {!this.state.boardsConsulted? <ActivityIndicator size="large" color="#0000ff" /> : undefined}
-                  <ScrollView>
                   <View style={styles.boardScroll}>
                     {this.state.boards.map((b, i) => {
                       //console.log(b.board)
-                      return <View key={i} style={styles.boardSectionElement}><TouchableOpacity
-                      key={i}
+                      return <View key={`board-${i}`} style={styles.boardSectionElement}><TouchableOpacity
+
                       onPress={this.boardPressed.bind(this, b.board)}>
                     <View>
                       <Text style={styles.boardSectionElementText}>{b.board}</Text>
@@ -91,34 +98,40 @@ boardPressed(a){
                     </TouchableOpacity></View>
                   })}
                   </View>
-                  </ScrollView>
                   </View>
 
 
 
-                  { this.state.selectedBoard && 
+                  { this.state.selectedBoard &&
                     <View style={styles.catalog}>
                       <Text style={styles.title}>[{this.state.selectedBoard}]Selecciona un catalogo</Text>
-                      <ScrollView>
+                        {!this.state.catalogConsulted? <ActivityIndicator size="large" color="#0000ff" /> : undefined}
                       <View>
-                      //TODO implement pagination
                         {this.state.catalog.map((c, i) => {
-                          return <View key={i}>
+                          return <View key={`catalog-page-${i}`}>
                             <Text style={styles.catalogPage}>Page {c.page} </Text>
                             {c.threads.map((t, ti) => {
-                              return <View key={ti} style={styles.catalogElement}><TouchableOpacity
-                              key={ti}
-                              onPress={this.catalogPressed.bind(this, t.no)}
-                              >
-                                <View>
-                                  <Text style={styles.catalogText}>{t.no} - {t.semantic_url.split('-').join(' ')}</Text>
-                                  </View>
-                              </TouchableOpacity></View>
+                              return <View key={`catalog-${ti}-page-${i}`} style={styles.catalogElement}>
+                                  <TouchableOpacity
+
+                                    onPress={this.catalogPressed.bind(this, t.no)}
+                                    ><View>
+                                        <Text style={styles.catalogText}>{t.no} - {t.semantic_url.split('-').join(' ')}</Text>
+                                  </View></TouchableOpacity>
+
+                                  <TouchableOpacity
+
+                                      onPress={this.catalogDownloadPressed.bind(this, t.no)}
+                                  >
+                                      <View>
+                                          <Text style={styles.catalogText}>Descargar a servidor</Text>
+                                      </View>
+                                  </TouchableOpacity>
+                              </View>
                             })}
                           </View>
                         })}
                       </View>
-                      </ScrollView>
                     </View>
                 }
                 {this.state.selectedCatalog &&
@@ -127,7 +140,7 @@ boardPressed(a){
                     {this.state.content.filter(c => c.ext).map((c, ic) => {
                       console.log('Content', c);
 
-                      return <View key={ic}>
+                      return <View key={`content-${ic}`}>
                       <Text>{c.ext}</Text>
 
                       <Image style={{height: 200, width: 200}} source={{uri: `https://i.4cdn.org/${this.state.selectedBoard}/${c.tim}s${c.ext}`}}/>
@@ -156,7 +169,7 @@ const styles = StyleSheet.create({
 
   boardSection: {
     backgroundColor: '#686868',
-    height: 200,
+    //height: 300,
   },
   boardScroll: {
     flexDirection: 'row',
@@ -176,7 +189,7 @@ const styles = StyleSheet.create({
 
   catalog: {
     backgroundColor: '#9b9b9b',
-    height: 200,
+    //height: 400,
   },
   catalogTitle: {
     //fontSize: 35,
